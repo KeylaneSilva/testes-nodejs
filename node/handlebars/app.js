@@ -1,22 +1,40 @@
-const express = require("express");
+const express = require("express"); // n funcionalidades dentro do nodejs
 const app = express();
-const handlebars = require('express-handlebars');
-const Sequelize = require('sequelize');
+const handlebars = require('express-handlebars'); // otimização de templates
+const bodyParser = require('body-parser');
+const Post = require('./models/Post');
+
 
 //Config
     // Template Engine
     app.engine('handlebars', handlebars({defaultLayout: 'main'}))
     app.set('view engine', 'handlebars')
 
-    // Conexao com o banco e dados Mysql
-    const sequelize = new Sequelize('test', 'root', '123456', {
-    host: "localhost",
-    dialect: 'mysql'
+    // Body Parser
+    app.use(bodyParser.urlencoded({extended: false}))
+    app.use(bodyParser.json())
+
+
+// Rotas
+
+    app.get("/", function(req, res){
+        res.render('home')
     })
 
-    // Rotas 
     app.get("/cad", function(req, res){
         res.render('formulario')
+    })
+
+    app.post("/add", function(req, res){
+        Post.create({
+            titulo: req.body.titulo,
+            conteudo: req.body.conteudo
+        }).then(function(){
+            res.redirect('/')
+        }).catch(function(erro){
+            res.send("Houve um erro: " + errp)
+        })
+        //res.send("TITULO: " + req.body.titulo + "<br>CONTEUDO: " + req.body.conteudo)
     })
 
 app.listen(8081, function(){
