@@ -14,11 +14,16 @@ const Post = require('./models/Post');
     app.use(bodyParser.urlencoded({extended: false}))
     app.use(bodyParser.json())
 
+    //Public
+    //app.use(express.static(path.join(__dirname, "public")))
+
 
 // Rotas
 
     app.get("/", function(req, res){
-        res.render('home')
+        Post.findAll({order: [['id', 'DESC']]}).then(function(posts){
+            res.render('home', {posts: posts})
+        })
     })
 
     app.get("/cad", function(req, res){
@@ -35,6 +40,15 @@ const Post = require('./models/Post');
             res.send("Houve um erro: " + errp)
         })
         //res.send("TITULO: " + req.body.titulo + "<br>CONTEUDO: " + req.body.conteudo)
+    })
+
+    app.get('/deletar/:id', function(req,res){
+        Post.destroy({where: {'id': req.params.id}}).then(function(){
+            res.redirect('/')
+            //res.send("Postagem deletada com sucesso!")
+        }).catch(function(erro){
+            res.send("Essa postagem não existe!")
+        })
     })
 
 app.listen(8081, function(){
